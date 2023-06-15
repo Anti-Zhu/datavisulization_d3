@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0">
+        <title>Nobel Visualization</title>
+        <link rel="stylesheet"
+            href="css/style.css">
+    </head>
+
+    <script>
+        window.onbeforeunload = function () {
+            window.scrollTo(0, 0);
+        }
+    </script>
+
+    <body class="hidden">
+        <div class="loading">
+            <p>加载数据与初始化设置...</p>
+            <p>Loading Data...</p>
+        </div>
+
+        <div id="chart">=
+            <div id="title"><span>诺贝尔奖获奖者数据可视化</span></div>
+            <div id="info">我们的可视化作品一共包含两个部分。第一部分是对诺贝尔奖历史颁奖数据的可视化，用户可以通过获奖领域、国家和性别三个维度筛选数据，
+                来探索和比较不同领域、国家和性别的颁奖情况统计，每一次筛选完毕，前三幅图都会更新。第二部分是移民对各国诺贝尔奖数量的贡献可视化，展示诺贝尔奖获得者在国家之间的流向，以及几个
+            国家移民获奖的占比情况。</div>
+
+            <div id="chart-header">Part 1 诺贝尔奖颁奖数据回顾</div>
+
+            <!-- 筛选器 -->
+            <div id="nobel-menu">
+                <p>我想要查看获奖领域为</p>
+                <div id="cat-select">
+                    <select></select>
+                </div>
+                <p>获奖者性别为</p>
+                <div id="gender-select">
+                    <select name=""
+                        id="">
+                        <option value="All">All</option>
+                        <option value="female">Female</option>
+                        <option value="male">Male</option>
+                    </select>
+                </div>
+                <p>获奖者国籍为</p>
+                <div id="country-select">
+                    <select></select>
+                </div>
+                <p>的诺贝尔奖获奖数据</p>
+            </div>
+
+            <!-- nobelTimeChart -->
+            <div id="time-header">
+                <h2 class="header">历年颁奖情况</h2>
+                <p class="description">自1901至2020年，诺贝尔奖共颁发了603个奖项，其中颁发最多的是物理学奖，共颁出114个奖项，216人次获奖；颁发
+                    最少的是经济学奖，共颁发出52个奖项，86人次获奖。总计包括962名个人或组织获得过诺贝尔奖，其中极少数个人/组织获奖次数超过1次，
+                    即总计930名个人及25个组织获得过诺贝尔奖。未颁发诺贝尔奖的总次数为49。其中大多数发生在第一次世界大战（1914-1918）和第二次世界大战（1939-1945）期间。
+                    其中缺席颁奖年份最多的是和平奖，有18年没有颁发出此奖项，而经济学奖自1968年创办以来，每年都有颁发。</p>
+            </div>
+
+            <div id="nobel-time">
+                <div id="time-tooltip">
+                    <h2></h2>
+                    <div class="wrapper"></div>
+                </div>
+            </div>
+
+            <!-- nobelMap -->
+            <div id="map-header">
+                <h2 class="header">获奖者全球分布</h2>
+                <p class="description">根据《华盛顿邮报》的一篇<a href="https://www.washingtonpost.com/news/worldviews/wp/2013/10/15/the-amazing-history-of
+                -the-nobel-prize-told-in-maps-and-charts/">文章</a>，亚洲、非洲、拉丁美洲和中东地区加起来只有104名诺贝尔奖获得者。这些地区
+                    拥有世界人口的81%，但产生了诺贝尔奖获得者中的10%。另一方面，82%的诺贝尔奖获得者来自西方国家（西欧、北美、澳大利亚或新西兰）。</p>
+            </div>
+
+            <div id="nobel-map">
+                <div id="map-tooltip">
+                    <h2></h2>
+                    <p></p>
+                </div>
+            </div>
+
+            <!-- nbviz_bar -->
+            <div id="bar-header">
+                <h2 class="header">各国获奖数量统计</h2>
+                <p class="description">我们提供了“绝对数量”和“人均数量”两种统计方式，同时你可以通过刚才的筛选器对获奖者所在的领域进行筛选。
+                人均数量统计中，圣卢西亚是全球人均获奖指数最高的国家，虽然只有不足20万人口，但却诞生了两位诺贝尔奖得主，分别为1979年经济学奖得主
+                    威廉·阿瑟·刘易斯和1992年文学奖得主德里克·沃尔科特。（我们获取的数据中把威廉·阿瑟·刘易斯统计到了英国的数据当中）这个统计指标
+                受国家人口数量的影响较大，所以我们希望对诺贝尔奖得主中的移民群体展开研究，讨论不同国家的吸引力。</p>
+            </div>
+
+            <div id="nobel-bar">
+                <div id="bar-tooltip">
+                    <h2></h2>
+                    <p id="tooltip-pop"></p>
+                    <p id="tooltip-win"></p>
+                </div>
+                <div id="metric-radio">
+                    获奖人数统计方式:&nbsp;
+                    <form>
+                        <label>
+                            <input type="radio"
+                                name="mode"
+                                value="0"
+                                checked>
+                            <span class="btn-radio"></span>
+                            <span class="radio-text">绝对数量</span>
+                        </label>
+                        <label>
+                            <input type="radio"
+                                name="mode"
+                                value="1">
+                            <span class="btn-radio"></span>
+                            <span class="radio-text">人均数量</span>
+                        </label>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="immigrant">
+            <div id="immigrant-header">Part 2 诺贝尔奖获得者的国籍变更</div>
+            <p id="immigrant-bio">根据美国国家政策基金会（NFAP）的分析，自2000年以来，美
+                国人在化学、医学和物理领域获得的诺贝尔奖中,38%（即104个中的40个）是由移民获得的。从1901年到2021年，在美国人获得的311个诺贝尔奖中，移民获得了35%，即109个。移民群体
+                为很多国家的科技发展做出了重要贡献。这些获奖者移民可能出于一些主动或被动的原因，如果能获得更多的数据将会有助于我们进一步探索。</p>
+            <div id="sankey-header">
+                <h2 class="header">获奖者的国籍变更情况</h2>
+                <p class="description">移民为美国贡献了大量的诺贝尔奖得奖记录。其中，16名英国科学家，14名加拿大科学家，14名德国科学家在
+                    美国工作时获得了诺贝尔奖。</p>
+                <iframe src="pyecharts_html/sankey.html" width="100%"  height="1000x" frameborder="0" scrolling="no"></iframe>
+            </div>
+
+            <div id="stackbar-header">
+                <h2 class="header">各国诺奖数量移民与非移民占比</h2>
+                <p class="description">我们选择了诺贝尔奖总得奖数最高的5个国家，并统计了它们的诺奖有多少来自本地居民，有多少来自移民。</p>
+                <iframe src="pyecharts_html/stackbar.html" width="100%"  height="500px" frameborder="0" scrolling="no"></iframe>
+            </div>
+        </div>
+
+        <hr/>
+
+
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="https://unpkg.com/topojson@3.0.2/dist/topojson.min.js"></script>
+        <script src="https://d3js.org/d3-queue.v3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
+        <script src="js/nbviz.js"></script>
+        <script src="js/menu_and_filter.js"></script>
+        <script src="js/nobelMap.js"></script>
+        <script src="js/nbvizBar.js"></script>
+        <script src="js/nobelTimeChart.js"></script>
+        <script src="js/loadDataAndInitialize.js"></script>
+    </body>
+
+</html>
